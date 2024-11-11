@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -134,6 +135,32 @@ public class Main {
 //        return result;
 //    }
 
+        //task 6
+//        CompletableFuture<String> hello = CompletableFuture.supplyAsync(()-> {
+//            try {
+//                TimeUnit.SECONDS.sleep(3);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                e.printStackTrace();
+//            }
+//            return "Hello";
+//        }) ;
+//
+//        CompletableFuture<String> world = CompletableFuture.supplyAsync(()-> {
+//            try {
+//                TimeUnit.SECONDS.sleep(5);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                e.printStackTrace();
+//            }
+//            return "World";
+//        }) ;
+//
+//        hello.thenCombine(world, (h, w) -> h + " " + w)
+//                .thenAccept(System.out::println)
+//                .join();
+
+        // task 7
         CompletableFuture<String> hello = CompletableFuture.supplyAsync(()-> {
             try {
                 TimeUnit.SECONDS.sleep(3);
@@ -154,9 +181,13 @@ public class Main {
             return "World";
         }) ;
 
-        hello.thenCombine(world, (h, w) -> h + " " + w)
+        CompletableFuture<String> combined = hello.thenCombine(world, (h, w) -> h + " " + w);
+
+        combined.thenCompose(result -> CompletableFuture.supplyAsync(() -> composition.apply(result)))
                 .thenAccept(System.out::println)
                 .join();
+
     }
 
+    public static Function<String, String> composition = editMessage -> editMessage.replaceAll("\\.", "") + " 👋🌍👋";
 }
