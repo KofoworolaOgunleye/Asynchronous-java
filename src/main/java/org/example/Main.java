@@ -17,27 +17,52 @@ public class Main {
 //        future.join();
 
         //task2
-        CompletableFuture<Void> hello = CompletableFuture.runAsync(()-> {
+//        CompletableFuture<Void> hello = CompletableFuture.runAsync(()-> {
+//            try {
+//                TimeUnit.SECONDS.sleep(3);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                e.printStackTrace();
+//            }
+//            System.out.println("Hello");
+//        }) ;
+//
+//        CompletableFuture<Void> world = CompletableFuture.runAsync(()-> {
+//            try {
+//                TimeUnit.SECONDS.sleep(5);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                e.printStackTrace();
+//            }
+//            System.out.println("World");
+//        }) ;
+//
+//        CompletableFuture<Void> helloWorld = CompletableFuture.allOf(hello,world);
+//        helloWorld.join();
+
+//        task3
+        CompletableFuture<String> hello = CompletableFuture.supplyAsync(()-> {
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 e.printStackTrace();
             }
-            System.out.println("Hello");
+            return "Hello";
         }) ;
 
-        CompletableFuture<Void> world = CompletableFuture.runAsync(()-> {
+        CompletableFuture<String> world = CompletableFuture.supplyAsync(()-> {
             try {
                 TimeUnit.SECONDS.sleep(5);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 e.printStackTrace();
             }
-            System.out.println("World");
+            return "World";
         }) ;
 
-        CompletableFuture<Void> helloWorld = CompletableFuture.allOf(hello,world);
+        CompletableFuture<String> helloWorld = hello.thenCombine(world, (h,w)->h +" "+ w);
+        helloWorld.thenAccept(System.out::println);
         helloWorld.join();
     }
 
