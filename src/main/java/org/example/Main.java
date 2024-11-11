@@ -183,11 +183,23 @@ public class Main {
 
         CompletableFuture<String> combined = hello.thenCombine(world, (h, w) -> h + " " + w);
 
-        combined.thenCompose(result -> CompletableFuture.supplyAsync(() -> composition.apply(result)))
+        combined.thenCompose(result -> CompletableFuture.supplyAsync(() -> editMessage.apply(result)))
+                .exceptionally(ex -> {
+                    System.out.println("Error " + ex.getMessage());
+                    return "Hello World!";
+                })
                 .thenAccept(System.out::println)
                 .join();
 
     }
 
-    public static Function<String, String> composition = editMessage -> editMessage.replaceAll("\\.", "") + " 👋🌍👋";
+//    public static Function<String, String> composition = editMessage -> editMessage.replaceAll("\\.", "") + " 👋🌍👋";
+    public static Function<String, String> editMessage = combinedResult -> {
+        if (Math.random() < 0.5) {
+            throw new RuntimeException("Exception occurred during async operation");
+        }
+        return combinedResult.replaceAll("\\.", "") + " 👋🌍👋";
+};
+
+
 }
