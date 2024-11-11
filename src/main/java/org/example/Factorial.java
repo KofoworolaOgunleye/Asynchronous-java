@@ -3,19 +3,32 @@ package org.example;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class Factorial {
     public static void main(String[] args) {
+
         String data = "85671 34262 92143 50984 24515 68356 77247 12348 56789 98760";
 
         List<BigInteger> numbers = Arrays.stream(data.split(" "))
                 .map(BigInteger::new)
                 .collect(Collectors.toList());
+
+        List<Integer> numberss = List.of(5, 6, 7, 8, 9);
+
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+        try{
+            for (int num:numberss){
+                Callable<BigInteger> task = () -> calculateFactorial(BigInteger.valueOf(num));
+
+                System.out.println("Factorial of " +num+ " is: "+ executor.submit(task).get());
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally {
+            executor.shutdown();
+        }
 
         String story = "Mary had a little lamb, its fleece was white as snow.";
         List<String> words= Arrays.asList(story.split(" "));
