@@ -1,7 +1,9 @@
 package org.example;
 
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class Main {
     public static void main(String[] args) {
@@ -41,9 +43,38 @@ public class Main {
 //        helloWorld.join();
 
 //        task3
+//        CompletableFuture<String> hello = CompletableFuture.supplyAsync(()-> {
+//            try {
+//                TimeUnit.SECONDS.sleep(3);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                e.printStackTrace();
+//            }
+//            return "Hello";
+//        }) ;
+//
+//        CompletableFuture<String> world = CompletableFuture.supplyAsync(()-> {
+//            try {
+//                TimeUnit.SECONDS.sleep(5);
+//            } catch (InterruptedException e) {
+//                Thread.currentThread().interrupt();
+//                e.printStackTrace();
+//            }
+//            return "World";
+//        }) ;
+//
+//        CompletableFuture<String> helloWorld = hello.thenCombine(world, (h,w)->h +" "+ w);
+//        helloWorld.thenAccept(System.out::println);
+//        helloWorld.join();
+//    }
+
+
+        //task 4
+        Random random = new Random();
         CompletableFuture<String> hello = CompletableFuture.supplyAsync(()-> {
+            int delay = random.nextInt(10)+1;
             try {
-                TimeUnit.SECONDS.sleep(3);
+                TimeUnit.SECONDS.sleep(delay);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 e.printStackTrace();
@@ -52,8 +83,9 @@ public class Main {
         }) ;
 
         CompletableFuture<String> world = CompletableFuture.supplyAsync(()-> {
+            int delay = random.nextInt(10)+1;
             try {
-                TimeUnit.SECONDS.sleep(5);
+                TimeUnit.SECONDS.sleep(delay);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 e.printStackTrace();
@@ -61,8 +93,15 @@ public class Main {
             return "World";
         }) ;
 
-        CompletableFuture<String> helloWorld = hello.thenCombine(world, (h,w)->h +" "+ w);
-        helloWorld.thenAccept(System.out::println);
+        CompletableFuture<String> helloWorld = hello.thenCombine(world, (h,w)->h +" "+ w)
+                        .orTimeout(10, TimeUnit.SECONDS);
+        helloWorld.thenAccept(System.out::println)
+                        .exceptionally(ex -> {
+                            if (ex.getCause() instanceof TimeoutException) {
+                                System.out.println("Error: Time exceeded 10 seconds");
+                            }
+                            return null;
+                        });
         helloWorld.join();
     }
 
