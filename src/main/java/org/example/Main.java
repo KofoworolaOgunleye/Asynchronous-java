@@ -109,29 +109,54 @@ public class Main {
 //                        });
 //        helloWorld.join();
 //    }
+        //task 5
+//        String data = "85671 34262 92143 50984 24515 68356 77247 12348 56789 98760";
+//
+//        List<BigInteger> numbers = Arrays.stream(data.split(" "))
+//                .map(BigInteger::new)
+//                .collect(Collectors.toList());
+//
+//        CompletableFuture.supplyAsync(() -> numbers)
+//                .thenApply(list ->
+//                        list.stream()
+//                                .map(Main::calculateFactorial)
+//                                .collect(Collectors.toList())
+//                )
+//                .thenAccept(result ->
+//                        System.out.println("Factorials: " + result)
+//                ).join();
 
-        String data = "85671 34262 92143 50984 24515 68356 77247 12348 56789 98760";
+//    private static BigInteger calculateFactorial(BigInteger num) {
+//        BigInteger result = BigInteger.ONE;
+//        for (BigInteger i = BigInteger.ONE; i.compareTo(num) <= 0; i = i.add(BigInteger.ONE)) {
+//            result = result.multiply(i);
+//        }
+//        return result;
+//    }
 
-        List<BigInteger> numbers = Arrays.stream(data.split(" "))
-                .map(BigInteger::new)
-                .collect(Collectors.toList());
+        CompletableFuture<String> hello = CompletableFuture.supplyAsync(()-> {
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                e.printStackTrace();
+            }
+            return "Hello";
+        }) ;
 
-        CompletableFuture.supplyAsync(() -> numbers)
-                .thenApply(list ->
-                        list.stream()
-                                .map(Main::calculateFactorial)
-                                .collect(Collectors.toList())
-                )
-                .thenAccept(result ->
-                        System.out.println("Factorials: " + result)
-                ).join();
+        CompletableFuture<String> world = CompletableFuture.supplyAsync(()-> {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                e.printStackTrace();
+            }
+            return "World";
+        }) ;
+
+        hello.thenCombine(world, (h, w) -> h + " " + w)
+                .thenAccept(System.out::println)
+                .join();
     }
 
-    private static BigInteger calculateFactorial(BigInteger num) {
-        BigInteger result = BigInteger.ONE;
-        for (BigInteger i = BigInteger.ONE; i.compareTo(num) <= 0; i = i.add(BigInteger.ONE)) {
-            result = result.multiply(i);
-        }
-        return result;
-    }
 }
